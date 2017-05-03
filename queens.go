@@ -3,10 +3,12 @@ package main
 import "fmt"
 
 const (
-	maxRows      = 8
-	maxCols      = 8
-	blockValue   = -1
-	unblockValue = 1
+	maxRows             = 8
+	maxCols             = 8
+	invalidateIncrement = -1 // Indicates that this location cannot host a queen
+	validateIncrement   = 1
+	queen = 1
+	empty = 0
 )
 
 func main() {
@@ -17,44 +19,56 @@ func main() {
 		board[i] = make([]int, maxCols)
 	}
 
-	AddAQueen(board, 0, 0)
+	QueenForRow(board, 0, 0)
 	PrintBoard(board)
 }
 
-// AddAQueen - Adds the next queen
-func AddAQueen(board [][]int, row, qcount int) bool {
+// QueenForRow - Adds the next queen
+func QueenForRow(board [][]int, row, qcount int) bool {
 	for col := range board[row] {
-		if board[row][col] == 0 {
-			board[row][col] = 1
-			qcount++
-			Blocker(board, row, col)
+		if board[row][col] == empty {
+			qcount = AddQueen(board, row, col, qcount)
 			// Test if we are done
 			if qcount == maxRows {
 				return true
 			}
-			// Add another queen
-			if AddAQueen(board, row+1, qcount) {
+			// Check next row
+			if QueenForRow(board, row+1, qcount) {
 				return true
 			}
 			// Adding this queen didn't work out.  Need to try next column
-			qcount--
-			board[row][col] = 0
-			Unblocker(board, row, col)
+			qcount = RemoveQueen(qcount, board, row, col)
 		}
 	}
 	return false
 }
 
+// RemoveQueen -- Performs steps involved with removing a queen off the board
+func RemoveQueen(qcount int, board [][]int, row int, col int) (int) {
+	qcount--
+	board[row][col] = empty
+	Unblocker(board, row, col)
+	return qcount
+}
+
+// AddQueen -- Performs steps involved with adding a queen to the board
+func AddQueen(board [][]int, row, col, qcount int) (int) {
+	board[row][col] = queen
+	qcount++
+	Blocker(board, row, col)
+	return qcount
+}
+
 // Blocker -- Blocks squares where there can't be a queen or unblocks
 func Blocker(board [][]int, row, col int) {
-	Setter(board, row, col, blockValue)
+	Setter(board, row, col, invalidateIncrement)
 }
 
 // Unblocker -- Unblocks squares where there can't be a queen or unblocks
 func Unblocker(board [][]int, row, col int) {
 	// Note: Cannot unblock by setting value to 0 because a square may have
 	// been blocked more than once (i.e. by 2 different queens)
-	Setter(board, row, col, unblockValue)
+	Setter(board, row, col, validateIncrement)
 }
 
 // Setter - Sets target board squares to specified value
