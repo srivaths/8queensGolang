@@ -20,27 +20,23 @@ func main() {
 	}
 
 	QueenForRow(board, 0, 0)
-	PrintBoard(board)
 }
 
 // QueenForRow - Adds the next queen
-func QueenForRow(board [][]int, row, qcount int) bool {
+func QueenForRow(board [][]int, row, qcount int) {
 	for col := range board[row] {
 		if board[row][col] == empty {
 			qcount = AddQueen(board, row, col, qcount)
 			// Test if we are done
 			if qcount == maxRows {
-				return true
+				PrintBoard(board)
+			} else {
+				QueenForRow(board, row+1, qcount)
 			}
-			// Check next row
-			if QueenForRow(board, row+1, qcount) {
-				return true
-			}
-			// Adding this queen didn't work out.  Need to try next column
+			// Prepare to try next column
 			qcount = RemoveQueen(qcount, board, row, col)
 		}
 	}
-	return false
 }
 
 // RemoveQueen -- Performs steps involved with removing a queen off the board
@@ -113,4 +109,5 @@ func PrintBoard(board [][]int) {
 		}
 		fmt.Println()
 	}
+	fmt.Println("********************")
 }
