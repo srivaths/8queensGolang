@@ -11,6 +11,7 @@ const (
 	empty = 0
 )
 
+var solutionCount int
 func main() {
 	// Create the chess board
 	board := make([][]int, maxRows)
@@ -20,12 +21,13 @@ func main() {
 	}
 
 	QueenForRow(board, 0, 0)
+	fmt.Printf("%d solutions.\n", solutionCount)
 }
 
 // QueenForRow - Adds the next queen
 func QueenForRow(board [][]int, row, qcount int) {
-	for col := range board[row] {
-		if board[row][col] == empty {
+	for col, value := range board[row] {
+		if value == empty {
 			qcount = AddQueen(board, row, col, qcount)
 			// Test if we are done
 			if qcount == maxRows {
@@ -69,31 +71,21 @@ func Unblocker(board [][]int, row, col int) {
 
 // Setter - Sets target board squares to specified value
 func Setter(board [][]int, row, col, valueToSet int) {
-	// block east
+	// Set east
 	for x := col + 1; x < maxCols; x++ {
 		board[row][x] += valueToSet
 	}
-	// block south
+	// Set south
 	for x := row + 1; x < maxRows; x++ {
 		board[x][col] += valueToSet
 	}
-	// block se
-	var y = col + 1
-	for x := row + 1; x < maxRows; x++ {
-		if y == maxCols {
-			break
-		}
+	// Set se
+	for x, y := row + 1, col + 1 ; x < maxRows && y < maxCols; x, y = x + 1, y + 1 {
 		board[x][y] += valueToSet
-		y++
 	}
-	// block sw
-	y = col - 1
-	for x := row + 1; x < maxRows; x++ {
-		if y == -1 {
-			break
-		}
+	// Set sw
+	for x, y := row + 1, col - 1; x < maxRows && y > -1; x, y = x+1, y-1 {
 		board[x][y] += valueToSet
-		y--
 	}
 }
 
@@ -101,13 +93,14 @@ func Setter(board [][]int, row, col, valueToSet int) {
 func PrintBoard(board [][]int) {
 	for i := range board {
 		for j := range board[i] {
-			if board[i][j] != 1 {
-				fmt.Print("_ ")
+			if board[i][j] != queen {
+				fmt.Print("- ")
 			} else {
 				fmt.Print("Q ")
 			}
 		}
 		fmt.Println()
 	}
+	solutionCount++
 	fmt.Println("********************")
 }
