@@ -20,57 +20,57 @@ func main() {
 		board[i] = make([]int, maxCols)
 	}
 
-	QueenForRow(board, 0, 0)
+	queenForRow(board, 0, 0)
 	fmt.Printf("%d solutions.\n", solutionCount)
 }
 
-// QueenForRow - Adds the next queen
-func QueenForRow(board [][]int, row, qcount int) {
+// queenForRow - Adds the next queen
+func queenForRow(board [][]int, row, qcount int) {
 	for col, value := range board[row] {
 		if value == empty {
-			qcount = AddQueen(board, row, col, qcount)
+			qcount = addQueen(board, row, col, qcount)
 			// Test if we are done
 			if qcount == maxRows {
-				PrintBoard(board)
+				printBoard(board)
 			} else {
-				QueenForRow(board, row+1, qcount)
+				queenForRow(board, row+1, qcount)
 			}
 			// Prepare to try next column
-			qcount = RemoveQueen(qcount, board, row, col)
+			qcount = removeQueen(qcount, board, row, col)
 		}
 	}
 }
 
-// RemoveQueen -- Performs steps involved with removing a queen off the board
-func RemoveQueen(qcount int, board [][]int, row int, col int) (int) {
+// removeQueen -- Performs steps involved with removing a queen off the board
+func removeQueen(qcount int, board [][]int, row int, col int) (int) {
 	qcount--
 	board[row][col] = empty
-	Unblocker(board, row, col)
+	unblocker(board, row, col)
 	return qcount
 }
 
-// AddQueen -- Performs steps involved with adding a queen to the board
-func AddQueen(board [][]int, row, col, qcount int) (int) {
+// addQueen -- Performs steps involved with adding a queen to the board
+func addQueen(board [][]int, row, col, qcount int) (int) {
 	board[row][col] = queen
 	qcount++
-	Blocker(board, row, col)
+	blocker(board, row, col)
 	return qcount
 }
 
-// Blocker -- Blocks squares where there can't be a queen or unblocks
-func Blocker(board [][]int, row, col int) {
-	Setter(board, row, col, invalidateIncrement)
+// blocker -- Blocks squares where there can't be a queen or unblocks
+func blocker(board [][]int, row, col int) {
+	setter(board, row, col, invalidateIncrement)
 }
 
-// Unblocker -- Unblocks squares where there can't be a queen or unblocks
-func Unblocker(board [][]int, row, col int) {
+// unblocker -- Unblocks squares where there can't be a queen or unblocks
+func unblocker(board [][]int, row, col int) {
 	// Note: Cannot unblock by setting value to 0 because a square may have
 	// been blocked more than once (i.e. by 2 different queens)
-	Setter(board, row, col, validateIncrement)
+	setter(board, row, col, validateIncrement)
 }
 
-// Setter - Sets target board squares to specified value
-func Setter(board [][]int, row, col, valueToSet int) {
+// setter - Sets target board squares to specified value
+func setter(board [][]int, row, col, valueToSet int) {
 	// Set east
 	for x := col + 1; x < maxCols; x++ {
 		board[row][x] += valueToSet
@@ -89,8 +89,8 @@ func Setter(board [][]int, row, col, valueToSet int) {
 	}
 }
 
-// PrintBoard -- Prints the board
-func PrintBoard(board [][]int) {
+// printBoard -- Prints the board
+func printBoard(board [][]int) {
 	for i := range board {
 		for j := range board[i] {
 			if board[i][j] != queen {
